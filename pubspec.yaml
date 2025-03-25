@@ -29,6 +29,7 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
 
+  carousel_slider: ^5.0.0
   chewie: ^1.10.0
   cupertino_icons: ^1.0.8
   flutter:
@@ -36,6 +37,7 @@ dependencies:
   google_fonts: ^6.2.1
   lottie: ^3.3.1
   video_player: ^2.9.2
+  visibility_detector: ^0.4.0+2
 
 dev_dependencies:
   flutter_lints: ^5.0.0
@@ -60,8 +62,11 @@ flutter:
     - assets/background-video2.mp4
     - assets/background-video3.mp4
     - assets/background-video3.mp4
-    - assets/carousel1.jpg
-   
+    - assets/carousel1.jpg 
+    - assets/inspiration3.png
+    - assets/carousel5.jpg
+    - assets/carousel6.jpg
+
     - assets/inspiration1.png
     - assets/inspiration2.png
     - assets/inspiration3 (2).png

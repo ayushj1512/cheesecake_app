@@ -12,7 +12,8 @@ class _OffersState extends State<Offers> {
   final List<Map<String, String>> offers = [
     {
       "title": "Flat 20% Off on First Order!",
-      "image": "assets/carousel1.jpg",
+      "image":
+          "assets/royalty-free-stock-photography-clip-art-offers-vector-thumbnail.jpg",
       "description": "Get 20% off on your first order. Use code: WELCOME20",
       "validity": "Valid till 29th Feb 2025",
     },

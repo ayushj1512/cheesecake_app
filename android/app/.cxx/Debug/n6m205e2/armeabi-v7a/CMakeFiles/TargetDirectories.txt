@@ -1,0 +1,2 @@
+C:/Users/croma/funkypanda/android/app/.cxx/Debug/n6m205e2/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/croma/funkypanda/android/app/.cxx/Debug/n6m205e2/armeabi-v7a/CMakeFiles/rebuild_cache.dir

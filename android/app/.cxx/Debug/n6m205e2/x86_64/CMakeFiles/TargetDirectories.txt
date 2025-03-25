@@ -1,0 +1,2 @@
+C:/Users/croma/funkypanda/android/app/.cxx/Debug/n6m205e2/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/croma/funkypanda/android/app/.cxx/Debug/n6m205e2/x86_64/CMakeFiles/rebuild_cache.dir

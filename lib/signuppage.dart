@@ -117,8 +117,30 @@ class _SignpageState extends State<Signpage> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Homescreen()));
+                    Navigator.pushReplacement(
+                      context,
+                      PageRouteBuilder(
+                        transitionDuration: Duration(milliseconds: 500),
+                        pageBuilder: (context, animation, secondaryAnimation) =>
+                            Homescreen(
+                          initialIndex: 0,
+                        ),
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
+                          const begin =
+                              Offset(-1.0, 0.0); // Slide in from the left
+                          const end = Offset.zero;
+                          const curve = Curves.easeInOut;
+
+                          var tween = Tween(begin: begin, end: end)
+                              .chain(CurveTween(curve: curve));
+                          var offsetAnimation = animation.drive(tween);
+
+                          return SlideTransition(
+                              position: offsetAnimation, child: child);
+                        },
+                      ),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black,
@@ -159,8 +181,37 @@ class _SignpageState extends State<Signpage> {
                 Text("Already have an Account?"),
                 GestureDetector(
                   onTap: () {
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => Loginpage()));
+                    Navigator.pushReplacement(
+                        context,
+                        PageRouteBuilder(
+                          transitionDuration: Duration(milliseconds: 500),
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                                  Loginpage(),
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
+                            return AnimatedBuilder(
+                              animation: animation,
+                              builder: (context, child) {
+                                double angle = animation.value *
+                                    3.14; // Rotate from 0 to 180 degrees
+                                return Transform(
+                                  alignment: Alignment.center,
+                                  transform: Matrix4.identity()
+                                    ..setEntry(3, 2, 0.001) // Perspective
+                                    ..rotateY(angle),
+                                  child: Opacity(
+                                    opacity: (animation.value < 0.5)
+                                        ? 0
+                                        : 1, // Hide during first half
+                                    child: child,
+                                  ),
+                                );
+                              },
+                              child: child,
+                            );
+                          },
+                        ));
                   },
                   child: Text(
                     " Login",

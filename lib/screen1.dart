@@ -1,9 +1,15 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:funkypanda/cheesecake_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:video_player/video_player.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final Function(int) setIndex;
+
+  const HomeScreen(
+      {super.key,
+      required void Function(int index) setIndexCallback,
+      required this.setIndex});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -12,8 +18,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final ScrollController _scrollController = ScrollController();
   bool _showButton = false;
-  late VideoPlayerController _videoController;
-  bool _videoError = false;
 
   List<Map<String, String>> cheesecakes = [
     {
@@ -21,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
       "image": "assets/inspiration2.png",
       "price": "₹299",
       "description":
-          "A delicious milk chocolate chip cheesecake with a crunchy cookie base.",
+          "A rich and creamy milk chocolate chip cheesecake,\nlayered with smooth, velvety chocolate filling.",
       "reviews": "⭐⭐⭐⭐☆ (120 reviews)"
     },
     {
@@ -34,42 +38,26 @@ class _HomeScreenState extends State<HomeScreen> {
     },
     {
       "name": "Biscoff Cheesecake",
-      "image": "assets/inspiration4.png",
+      "image": "assets/inspiration3.png",
       "price": "₹399",
       "description":
           "A rich Biscoff-flavored cheesecake with a caramelized biscuit crust.",
       "reviews": "⭐⭐⭐⭐☆ (110 reviews)"
     },
     {
-      "name": "Milk Chocolate Chip Cookie",
-      "image": "assets/inspiration2.png",
+      "name": "Veg. Ramen",
+      "image": "assets/inspiration4.png",
       "price": "₹299",
       "description":
           "A delicious milk chocolate chip cheesecake with a crunchy cookie base.",
       "reviews": "⭐⭐⭐⭐☆ (120 reviews)"
-    },
-    {
-      "name": "Strawberry Cheesecake",
-      "image": "assets/inspiration1.png",
-      "price": "₹349",
-      "description":
-          "A creamy strawberry cheesecake with fresh strawberry toppings.",
-      "reviews": "⭐⭐⭐⭐⭐ (150 reviews)"
-    },
-    {
-      "name": "Biscoff Cheesecake",
-      "image": "assets/inspiration4.png",
-      "price": "₹399",
-      "description":
-          "A rich Biscoff-flavored cheesecake with a caramelized biscuit crust.",
-      "reviews": "⭐⭐⭐⭐☆ (110 reviews)"
     },
   ];
 
   @override
   void initState() {
     super.initState();
-    _initializeVideo();
+    ;
     _scrollController.addListener(() {
       setState(() {
         _showButton = _scrollController.offset > 100;
@@ -77,34 +65,20 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  Future<void> _initializeVideo() async {
-    try {
-      _videoController =
-          VideoPlayerController.asset('assets/background-video3a.mp4');
-      await _videoController.initialize();
-      _videoController.setLooping(true);
-      _videoController.play();
-      setState(() {});
-    } catch (e) {
-      setState(() {
-        _videoError = true;
-      });
-      debugPrint("Video loading error: $e");
-    }
-  }
-
-  @override
-  void dispose() {
-    _videoController.dispose();
-    super.dispose();
-  }
-
   void _navigateToDetails(
       BuildContext context, Map<String, String> cheesecake) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => CheesecakeDetailsScreen(cheesecake: cheesecake),
+      PageRouteBuilder(
+        transitionDuration: Duration(milliseconds: 500), // Animation duration
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            CheesecakeDetailsScreen(cheesecake: cheesecake),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(
+            opacity: animation,
+            child: child,
+          );
+        },
       ),
     );
   }
@@ -135,7 +109,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     Text(
                       "Order Now",
                       style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
@@ -147,31 +123,10 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Video Player with error handling
-            _videoError
-                ? Container(
-                    height: 200,
-                    color: Colors.grey.shade300,
-                    child: Center(
-                      child: Text(
-                        "⚠️ Video failed to load",
-                        style: TextStyle(fontSize: 16, color: Colors.red),
-                      ),
-                    ),
-                  )
-                : _videoController.value.isInitialized
-                    ? AspectRatio(
-                        aspectRatio: _videoController.value.aspectRatio,
-                        child: VideoPlayer(_videoController),
-                      )
-                    : Container(
-                        height: 200,
-                        color: Colors.black,
-                        child: Center(child: CircularProgressIndicator()),
-                      ),
-            SizedBox(height: 10),
-
-            // Title text
+            buildCarousel(),
+            SizedBox(
+              height: 30,
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Center(
@@ -279,63 +234,30 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class CheesecakeDetailsScreen extends StatelessWidget {
-  final Map<String, String> cheesecake;
-  const CheesecakeDetailsScreen({required this.cheesecake, super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color.fromRGBO(255, 180, 204, 1),
-      appBar: AppBar(
-        backgroundColor: Color.fromRGBO(255, 180, 204, 1),
-        actions: [
-          IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: Icon(Icons.cancel),
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Image.asset(
-                  cheesecake["image"]!,
-                  height: 250,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
-            Text(
-              cheesecake["name"]!,
-              style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black),
-            ),
-            SizedBox(height: 10),
-            Text(
-              cheesecake["price"]!,
-              style: TextStyle(
-                  fontSize: 22,
-                  color: Colors.green,
-                  fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            Text(
-              cheesecake["description"]!,
-              style: TextStyle(fontSize: 16, color: Colors.black87),
-            ),
-          ],
+final List<String> carouselImages = [
+  "assets/carousel1.jpg",
+  "assets/carousel5.jpg",
+  "assets/carousel6.jpg",
+];
+Widget buildCarousel() {
+  return CarouselSlider(
+    options: CarouselOptions(
+      height: 300.0, // Adjust height as needed
+      autoPlay: true, // Auto-slide feature
+      autoPlayInterval: Duration(seconds: 3),
+      enlargeCenterPage: false, // Disable center enlargement
+      aspectRatio: 16 / 9,
+      viewportFraction: 1.0, // Ensures full width
+    ),
+    items: carouselImages.map((imagePath) {
+      return ClipRRect(
+        borderRadius: BorderRadius.zero, // Remove rounded corners if needed
+        child: Image.asset(
+          imagePath,
+          fit: BoxFit.cover, // Ensure image covers the full space
+          width: double.infinity,
         ),
-      ),
-    );
-  }
+      );
+    }).toList(),
+  );
 }

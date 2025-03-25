@@ -136,8 +136,20 @@ class _LoginpageState extends State<Loginpage> {
                   Text("Don't have an Account?"),
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushReplacement(context,
-                          MaterialPageRoute(builder: (context) => Signpage()));
+                      Navigator.pushReplacement(
+                        context,
+                        PageRouteBuilder(
+                          transitionDuration: Duration(milliseconds: 500),
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                                  Signpage(),
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
+                            return FadeTransition(
+                                opacity: animation, child: child);
+                          },
+                        ),
+                      );
                     },
                     child: Text(
                       "Sign up",
